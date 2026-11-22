@@ -109,7 +109,11 @@ on the selected format. Existing files are not overwritten.
 Git ignores files matching the downloader's output names, including partial
 downloads, when they are saved inside this repository.
 
-## Test a download
+## Tests
+
+Run `sh tests/playlist.sh` from the repository root to check that both modes
+select the linked video when a URL contains `list=`. This test uses local
+stubs and runs offline.
 
 From the repository root, run the live smoke test:
 

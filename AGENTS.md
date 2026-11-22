@@ -19,10 +19,11 @@ This is a POSIX shell CLI for downloading YouTube videos with `yt-dlp` and FFmpe
 Run from the repository root after shell changes.
 
 ```sh
-for script in download-youtube.sh install.sh tests/smoke.sh; do
+for script in download-youtube.sh install.sh tests/*.sh; do
   sh -n "$script" || exit 1
 done
 ./download-youtube.sh --help
+sh tests/playlist.sh
 ```
 
 For parser or argument changes, put a stub `yt-dlp` first on `PATH` and inspect the arguments and stdin. For download or merge changes, run `sh tests/smoke.sh` with internet access and `yt-dlp`, `ffmpeg`, and `ffprobe` on `PATH`. The [smoke test](tests/smoke.sh) downloads a short public sample into a temporary directory, verifies that the output contains audio and video, and cleans up on exit. Report which checks ran and flag any blocked live check.
