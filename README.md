@@ -7,18 +7,7 @@ highest available resolution and saves to your current directory.
 
 ## Installation
 
-1. Install `yt-dlp` and FFmpeg and make sure both are on your `PATH`. On macOS
-   with Homebrew:
-
-   ```sh
-   brew install yt-dlp ffmpeg
-   ```
-
-   On other systems, use the upstream installation instructions linked above.
-   Listing formats only needs `yt-dlp`. The script runs in `sh`; Node.js and
-   npm are not required.
-
-2. If you haven't cloned the project, use the GitHub CLI from an account with
+1. If you haven't cloned the project, use the GitHub CLI from an account with
    access to the repository:
 
    ```sh
@@ -26,23 +15,30 @@ highest available resolution and saves to your current directory.
    cd download-youtube
    ```
 
-3. From the repository root, install the command and its shorthand for your
-   user. If either name is already in use, check it before replacing it.
+2. From the repository root, run the installer:
 
    ```sh
-   mkdir -p "$HOME/.local/bin"
-   install -m 755 download-youtube.sh "$HOME/.local/bin/download-youtube"
-   ln -s download-youtube "$HOME/.local/bin/yt"
+   ./install.sh
    ```
 
-4. If `~/.local/bin` is not already on your `PATH`, run the following in your
+   The installer checks for `yt-dlp` and FFmpeg on your `PATH`. If either is
+   missing and Homebrew is on your `PATH`, it runs `brew install` for just the
+   missing tools. If Homebrew is unavailable, install the missing tools with your
+   system's package manager or the upstream instructions linked above, then
+   rerun the installer.
+
+   Once both tools are available, it sets up `download-youtube` and `yt` in
+   `~/.local/bin` without overwriting a different command at either path.
+   Node.js and npm are not required.
+
+3. If `~/.local/bin` is not already on your `PATH`, run the following in your
    shell. Add the same line to `~/.zshrc` to keep it for future zsh sessions.
 
    ```sh
    export PATH="$HOME/.local/bin:$PATH"
    ```
 
-5. Verify both commands resolve and try listing formats without downloading:
+4. Verify both commands resolve and try listing formats without downloading:
 
    ```sh
    download-youtube --help
@@ -50,7 +46,8 @@ highest available resolution and saves to your current directory.
    ```
 
 To use the script without installing it, run `./download-youtube.sh --help`
-from the repository root.
+from the repository root. The downloader does not install tools on its own,
+and listing formats only requires `yt-dlp`.
 
 ## Usage
 
