@@ -5,6 +5,13 @@ and [FFmpeg](https://ffmpeg.org/) for downloading one YouTube video at a time.
 Run it as `download-youtube` or `yt` after installation. It defaults to the
 highest available resolution and saves to your current directory.
 
+## Why I made this
+
+I wanted a quick way to download YouTube videos straight to my machine. The
+download sites I tried were full of ads and spam, and they often capped the
+resolution. I made this wrapper so I could paste a link into my terminal and
+get the best available video and audio without going through those sites.
+
 ## Installation
 
 1. If you haven't cloned the project, use the GitHub CLI from an account with
@@ -97,4 +104,5 @@ downloads, when they are saved inside this repository.
 
 ## License
 
-[MIT](LICENSE)
+The script is free to use under the [MIT license](LICENSE). Run it as-is or
+modify it to fit your needs.
