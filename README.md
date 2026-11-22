@@ -1,7 +1,7 @@
 # YouTube downloader
 
 `download-youtube` is a shell wrapper around [yt-dlp](https://github.com/yt-dlp/yt-dlp)
-and [FFmpeg](https://ffmpeg.org/) for downloading one YouTube video at a time.
+and [FFmpeg](https://ffmpeg.org/) for downloading one or more YouTube videos.
 Run it as `download-youtube` or `yt` after installation. It defaults to the
 highest available resolution and saves to your current directory.
 
@@ -60,16 +60,30 @@ and listing formats only requires `yt-dlp`.
 
 ## Usage
 
-Omit the URL to enter it at the prompt. Quote URLs passed on the command line,
-especially those containing query parameters.
+With no URLs or batch file, the script prompts for one URL. To download
+multiple videos, pass each URL as its own argument. Quote each URL,
+especially if it contains query parameters.
 
 ```sh
 yt
 download-youtube "https://youtu.be/NE84ZYfnniU"
+yt "https://youtu.be/jNQXAC9IVRw" "https://youtu.be/NE84ZYfnniU"
+yt --batch-file urls.txt
 yt -F "https://youtu.be/NE84ZYfnniU"
 yt -r 1080p -d "$HOME/Downloads/AI Videos" "https://youtu.be/NE84ZYfnniU"
 yt -k "https://youtu.be/NE84ZYfnniU"
 ```
+
+For a batch file, put one URL per line without quotes:
+
+```text
+https://youtu.be/jNQXAC9IVRw
+https://youtu.be/NE84ZYfnniU
+```
+
+Empty lines and lines beginning with `#` are ignored. You can combine URL
+arguments and batch files in the same command. Options such as `-d` and `-r`
+apply to every video.
 
 The script accepts YouTube watch URLs (`youtube.com/watch?v=…`), `youtu.be`
 short links, and video URLs under `/shorts/`, `/live/`, or `/embed/`. It does
@@ -77,6 +91,7 @@ not accept playlist or channel links.
 
 ## Options
 
+- `-a FILE`, `--batch-file FILE`: Read YouTube URLs from a text file, one per line.
 - `-F`, `--list-resolutions`, `--list-formats`: List available formats and
   resolutions without downloading.
 - `-r HEIGHT`, `--resolution HEIGHT`: Require an exact video height, such as

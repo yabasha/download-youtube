@@ -2,21 +2,25 @@
 
 usage() {
   cat <<EOF
-Usage: ${0##*/} [OPTIONS] [YOUTUBE_URL]
+Usage: ${0##*/} [OPTIONS] [YOUTUBE_URL ...]
 
-Download one YouTube video at the highest available resolution by default.
-Omit the URL to enter it when prompted. Files save in the current directory
-unless you set a destination. Separate streams are merged to MKV when needed.
+Download YouTube videos at the highest available resolution by default.
+Pass URLs as separate arguments or use -a to read one per line from a file.
+With neither, the script prompts for one URL. Files save in the current
+directory unless you set a destination.
 
 Options:
-  -d, --destination DIR   Save to DIR instead of the current directory.
-  -F, --list-resolutions  Show available formats and resolutions without downloading.
-  -r, --resolution HEIGHT Download at the exact video height, e.g. 1080 or 1080p.
-  -k, --keep-video         Keep original video and audio files after merging.
-  -h, --help               Show this help message and exit.
+  -a, --batch-file FILE     Read one YouTube URL per line from FILE.
+  -d, --destination DIR     Save to DIR instead of the current directory.
+  -F, --list-resolutions    Show available formats and resolutions without downloading.
+  -r, --resolution HEIGHT  Download at the exact video height, e.g. 1080 or 1080p.
+  -k, --keep-video          Keep original video and audio files after merging.
+  -h, --help                Show this help message and exit.
 
 Examples:
   ${0##*/}
+  ${0##*/} "https://youtu.be/VIDEO_ID_1" "https://youtu.be/VIDEO_ID_2"
+  ${0##*/} -a urls.txt
   ${0##*/} -F "https://youtu.be/VIDEO_ID"
   ${0##*/} -r 1080p -d "\$HOME/Downloads" "https://youtu.be/VIDEO_ID"
 
@@ -24,11 +28,49 @@ Requires yt-dlp and, for downloads, ffmpeg. Existing files are not overwritten.
 EOF
 }
 
+fail() {
+  printf 'Error: %s\n' "$1" >&2
+  exit 1
+}
+
+add_url() {
+  [ -n "$1" ] || fail "${2-Video URL}: a video URL is required."
+  case "$1" in
+    *[[:space:]]*) fail "${2-Video URL}: the URL must not contain whitespace." ;;
+  esac
+
+  if ! printf '%s\n' "$1" | LC_ALL=C grep -Eq '^https?://(((www|m|music)\.)?youtube\.com/(watch\?([^#&[:space:]]+&)*v=[A-Za-z0-9_-]{11}([&#][^[:space:]]*)?|(shorts|live|embed)/[A-Za-z0-9_-]{11}([?&#][^[:space:]]*)?)|(www\.)?youtu\.be/[A-Za-z0-9_-]{11}([?&#][^[:space:]]*)?)$'; then
+    fail "${2-Video URL}: enter a valid YouTube video URL (watch, youtu.be, shorts, live, or embed)."
+  fi
+
+  if [ -n "$urls" ]; then
+    urls="$urls
+$1"
+  else
+    urls=$1
+  fi
+}
+
+read_batch() {
+  [ -f "$1" ] && [ -r "$1" ] || fail "cannot read batch file: $1"
+  line_number=0
+  cr=$(printf '\r')
+  while IFS= read -r batch_url || [ -n "$batch_url" ]; do
+    line_number=$((line_number + 1))
+    batch_url=${batch_url%"$cr"}
+    case "$batch_url" in
+      ''|\#*) continue ;;
+    esac
+    add_url "$batch_url" "$1:$line_number"
+  done < "$1"
+}
+
 keep_video=0
 list_resolutions=0
 destination=.
 resolution=
-url_provided=0
+urls=
+batch_requested=0
 options_done=0
 while [ "$#" -gt 0 ]; do
   if [ "$options_done" -eq 0 ]; then
@@ -47,7 +89,7 @@ while [ "$#" -gt 0 ]; do
         shift
         continue
         ;;
-      -d|--destination|-r|--resolution)
+      -a|--batch-file|-d|--destination|-r|--resolution)
         case "${2-}" in
           ''|-*)
             printf 'Error: %s requires a value.\n' "$1" >&2
@@ -55,6 +97,10 @@ while [ "$#" -gt 0 ]; do
             ;;
         esac
         case "$1" in
+          -a|--batch-file)
+            batch_requested=1
+            read_batch "$2" || fail "cannot read batch file: $2"
+            ;;
           -d|--destination)
             destination=$2
             ;;
@@ -84,13 +130,7 @@ while [ "$#" -gt 0 ]; do
     esac
   fi
 
-  if [ "$url_provided" -eq 1 ]; then
-    printf 'Error: provide at most one URL.\n' >&2
-    usage >&2
-    exit 1
-  fi
-  url=$1
-  url_provided=1
+  add_url "$1"
   shift
 done
 
@@ -106,46 +146,33 @@ if [ "$list_resolutions" -eq 0 ]; then
   require_command ffmpeg
 fi
 
-if [ "$url_provided" -eq 0 ]; then
+if [ -z "$urls" ]; then
+  [ "$batch_requested" -eq 0 ] || fail 'no video URLs found in batch files.'
   printf 'YouTube URL: '
-  IFS= read -r url || exit 1
-fi
-
-if [ -z "$url" ]; then
-  printf 'Error: a video URL is required.\n' >&2
-  exit 1
-fi
-
-case "$url" in
-  *[[:space:]]*)
-    printf 'Error: the URL must not contain whitespace.\n' >&2
-    exit 1
-    ;;
-esac
-
-if ! printf '%s\n' "$url" | LC_ALL=C grep -Eq '^https?://(((www|m|music)\.)?youtube\.com/(watch\?([^#&[:space:]]+&)*v=[A-Za-z0-9_-]{11}([&#][^[:space:]]*)?|(shorts|live|embed)/[A-Za-z0-9_-]{11}([?&#][^[:space:]]*)?)|(www\.)?youtu\.be/[A-Za-z0-9_-]{11}([?&#][^[:space:]]*)?)$'; then
-  printf 'Error: enter a valid YouTube video URL (watch, youtu.be, shorts, live, or embed).\n' >&2
-  exit 1
+  IFS= read -r url || [ -n "$url" ] || fail 'a video URL is required.'
+  add_url "$url"
 fi
 
 if [ "$list_resolutions" -eq 1 ]; then
-  exec yt-dlp --ignore-config --no-playlist --list-formats -- "$url"
+  set -- "$@" --list-formats
+else
+  formats='bestvideo*+bestaudio/best'
+  if [ -n "$resolution" ]; then
+    formats="bestvideo*[height=$resolution]+bestaudio/best[height=$resolution]"
+  fi
+
+  set -- "$@" --no-overwrites \
+    --format-sort-force -S res \
+    -f "$formats" \
+    --paths "home:$destination" \
+    --merge-output-format mkv \
+    -o '%(title)s [%(id)s].%(ext)s'
+
+  if [ "$keep_video" -eq 1 ]; then
+    set -- "$@" --keep-video
+  fi
 fi
 
-formats='bestvideo*+bestaudio/best'
-if [ -n "$resolution" ]; then
-  formats="bestvideo*[height=$resolution]+bestaudio/best[height=$resolution]"
-fi
-
-set -- --ignore-config --no-playlist --no-overwrites \
-  --format-sort-force -S res \
-  -f "$formats" \
-  --paths "home:$destination" \
-  --merge-output-format mkv \
-  -o '%(title)s [%(id)s].%(ext)s'
-
-if [ "$keep_video" -eq 1 ]; then
-  set -- "$@" --keep-video
-fi
-
-exec yt-dlp "$@" -- "$url"
+exec yt-dlp "$@" --batch-file /dev/stdin <<EOF
+$urls
+EOF
