@@ -1,6 +1,6 @@
 {
   "name": "download-youtube",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "private": true,
   "description": "Shell CLI for downloading YouTube videos with yt-dlp and FFmpeg",
   "license": "MIT",
