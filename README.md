@@ -5,6 +5,53 @@ and [FFmpeg](https://ffmpeg.org/) for downloading one YouTube video at a time.
 Run it as `download-youtube` or `yt` after installation. It defaults to the
 highest available resolution and saves to your current directory.
 
+## Installation
+
+1. Install `yt-dlp` and FFmpeg and make sure both are on your `PATH`. On macOS
+   with Homebrew:
+
+   ```sh
+   brew install yt-dlp ffmpeg
+   ```
+
+   On other systems, use the upstream installation instructions linked above.
+   Listing formats only needs `yt-dlp`. The script runs in `sh`; Node.js and
+   npm are not required.
+
+2. If you haven't cloned the project, use the GitHub CLI from an account with
+   access to the repository:
+
+   ```sh
+   gh repo clone yabasha/download-youtube
+   cd download-youtube
+   ```
+
+3. From the repository root, install the command and its shorthand for your
+   user. If either name is already in use, check it before replacing it.
+
+   ```sh
+   mkdir -p "$HOME/.local/bin"
+   install -m 755 download-youtube.sh "$HOME/.local/bin/download-youtube"
+   ln -s download-youtube "$HOME/.local/bin/yt"
+   ```
+
+4. If `~/.local/bin` is not already on your `PATH`, run the following in your
+   shell. Add the same line to `~/.zshrc` to keep it for future zsh sessions.
+
+   ```sh
+   export PATH="$HOME/.local/bin:$PATH"
+   ```
+
+5. Verify both commands resolve and try listing formats without downloading:
+
+   ```sh
+   download-youtube --help
+   yt -F "https://youtu.be/jNQXAC9IVRw"
+   ```
+
+To use the script without installing it, run `./download-youtube.sh --help`
+from the repository root.
+
 ## Usage
 
 Omit the URL to enter it at the prompt. Quote URLs passed on the command line,
@@ -39,33 +86,6 @@ downloads are merged into MKV. If no merge is needed, the extension depends
 on the selected format. Existing files are not overwritten.
 Git ignores files matching the downloader's output names, including partial
 downloads, when they are saved inside this repository.
-
-## Requirements
-
-`yt-dlp` and FFmpeg must be on your `PATH` for downloads. Listing formats
-only requires `yt-dlp`. These are system tools, not npm dependencies. The
-script runs in `sh` and does not require Node.js or npm.
-
-## Install the commands
-
-From the repository root, run these commands if `download-youtube` and `yt`
-are not already installed:
-
-```sh
-mkdir -p "$HOME/.local/bin"
-install -m 755 download-youtube.sh "$HOME/.local/bin/download-youtube"
-ln -s download-youtube "$HOME/.local/bin/yt"
-```
-
-If `~/.local/bin` is not on your `PATH`, add this line to `~/.zshrc` and open
-a new terminal:
-
-```sh
-export PATH="$HOME/.local/bin:$PATH"
-```
-
-Run `yt --help` to verify the installation. You can also run
-`./download-youtube.sh` directly from the repository without installing it.
 
 ## Troubleshooting
 
