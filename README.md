@@ -86,8 +86,9 @@ arguments and batch files in the same command. Options such as `-d` and `-r`
 apply to every video.
 
 The script accepts YouTube watch URLs (`youtube.com/watch?v=…`), `youtu.be`
-short links, and video URLs under `/shorts/`, `/live/`, or `/embed/`. It does
-not accept playlist or channel links.
+short links, and video URLs under `/shorts/`, `/live/`, or `/embed/`. Download
+and format-listing modes select only the linked video, even if its URL includes
+`list=`. Standalone playlist and channel URLs are rejected.
 
 ## Options
 

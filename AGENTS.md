@@ -12,7 +12,7 @@ This is a POSIX shell CLI for downloading YouTube videos with `yt-dlp` and FFmpe
 
 - Mixed argument and batch inputs retain their input order. Batch files accept CRLF and a final line without a newline, and skip empty lines and lines starting with `#`. Keep paths with spaces intact.
 - Downloads default to the highest available resolution and the current directory. `-r` requests an exact video height. Keep existing files intact. When separate streams need merging, use MKV and retain the original streams only with `-k`.
-- Playlist edge case. Standalone playlist URLs fail validation. Watch URLs with `list=` pass through unchanged, and `yt-dlp` can expand them into a playlist. Include this case when changing URL validation or playlist handling.
+- Both download and format-listing modes pass `--no-playlist` to `yt-dlp` so video URLs with `list=` select only the linked video. Standalone playlist URLs fail validation.
 
 ## Verification
 

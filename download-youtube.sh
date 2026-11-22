@@ -5,6 +5,7 @@ usage() {
 Usage: ${0##*/} [OPTIONS] [YOUTUBE_URL ...]
 
 Download YouTube videos at the highest available resolution by default.
+Each URL selects one video, even if it includes a playlist parameter.
 Pass URLs as separate arguments or use -a to read one per line from a file.
 With neither, the script prompts for one URL. Files save in the current
 directory unless you set a destination.
@@ -173,6 +174,6 @@ else
   fi
 fi
 
-exec yt-dlp "$@" --batch-file /dev/stdin <<EOF
+exec yt-dlp "$@" --no-playlist --batch-file /dev/stdin <<EOF
 $urls
 EOF
