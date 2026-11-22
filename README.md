@@ -93,6 +93,20 @@ on the selected format. Existing files are not overwritten.
 Git ignores files matching the downloader's output names, including partial
 downloads, when they are saved inside this repository.
 
+## Test a download
+
+From the repository root, run the live smoke test:
+
+```sh
+sh tests/smoke.sh
+```
+
+It downloads a short sample to a temporary folder, verifies that the file
+contains video and audio with `ffprobe`, and removes the test files when it
+exits. The test requires internet access, `yt-dlp`, and FFmpeg (including
+`ffprobe`) on your `PATH`. To test a different short video, pass its URL as
+an argument: `sh tests/smoke.sh "YOUTUBE_URL"`.
+
 ## Troubleshooting
 
 - **`yt: command not found`:** Check that `~/.local/bin` is on your `PATH`.
