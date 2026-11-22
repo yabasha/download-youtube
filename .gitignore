@@ -1,0 +1,6 @@
+# macOS Finder metadata
+.DS_Store
+
+# Downloader output: title followed by an 11-character YouTube ID.
+# Covers merged files, retained streams, and interrupted downloads.
+* \[???????????\].*
