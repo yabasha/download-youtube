@@ -43,7 +43,8 @@ downloads, when they are saved inside this repository.
 ## Requirements
 
 `yt-dlp` and FFmpeg must be on your `PATH` for downloads. Listing formats
-only requires `yt-dlp`.
+only requires `yt-dlp`. These are system tools, not npm dependencies. The
+script runs in `sh` and does not require Node.js or npm.
 
 ## Install the commands
 

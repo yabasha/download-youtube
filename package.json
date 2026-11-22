@@ -1,0 +1,19 @@
+{
+  "name": "download-youtube",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Shell CLI for downloading YouTube videos with yt-dlp and FFmpeg",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yabasha/download-youtube.git"
+  },
+  "bin": {
+    "download-youtube": "download-youtube.sh",
+    "yt": "download-youtube.sh"
+  },
+  "files": [
+    "download-youtube.sh"
+  ],
+  "dependencies": {}
+}
