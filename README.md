@@ -22,10 +22,12 @@ highest available resolution and saves to your current directory.
    ```
 
    The installer checks for `yt-dlp` and FFmpeg on your `PATH`. If either is
-   missing and Homebrew is on your `PATH`, it runs `brew install` for just the
-   missing tools. If Homebrew is unavailable, install the missing tools with your
-   system's package manager or the upstream instructions linked above, then
-   rerun the installer.
+   missing, it shows the `brew install` command for just the missing tools.
+   If Homebrew is available, answer `y` to let the installer run the command.
+   If you decline, press Enter, or run without an interactive terminal, it stops
+   without installing anything. Run the printed command manually and rerun
+   `./install.sh`. Without Homebrew, use your system's package manager or the
+   upstream installation instructions linked above.
 
    Once both tools are available, it sets up `download-youtube` and `yt` in
    `~/.local/bin` without overwriting a different command at either path.

@@ -42,9 +42,24 @@ for tool in yt-dlp ffmpeg; do
 done
 
 if [ "$#" -gt 0 ]; then
-  command -v brew >/dev/null 2>&1 ||
-    fail "Missing tools: $*. Install them manually or put Homebrew on PATH, then rerun the installer."
-  printf 'Installing missing tools with Homebrew: %s\n' "$*"
+  printf 'Missing tools: %s\n' "$*"
+  if ! command -v brew >/dev/null 2>&1; then
+    printf 'If you use Homebrew, add it to PATH and run: brew install %s\n' "$*"
+    fail 'Homebrew is not on PATH. Install the missing tools manually, then rerun ./install.sh.'
+  fi
+
+  printf 'Install command: brew install %s\n' "$*"
+  if [ ! -t 0 ]; then
+    fail 'No interactive terminal. Run the command above manually, then rerun ./install.sh.'
+  fi
+
+  printf 'Run this command now? [y/N] '
+  IFS= read -r answer || answer=
+  case "$answer" in
+    [Yy]|[Yy][Ee][Ss]) ;;
+    *) fail 'Dependencies were not installed. Run the command above manually, then rerun ./install.sh.' ;;
+  esac
+
   brew install "$@" || fail 'Homebrew installation failed. Resolve the error above and rerun the installer.'
   for tool do
     command -v "$tool" >/dev/null 2>&1 ||
